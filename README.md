@@ -6,10 +6,13 @@ This repository contains scripts and tools for data science and network visualiz
 
 Features
 Network Representation: Visualize complex networks using NetworkX.
+
 Path Analysis: Perform detailed path analysis to find shortest paths, all paths, and other path-related queries.
+
 Node/Edge Analysis: Analyze nodes and edges to extract meaningful metrics and insights.
+
 Customization: Tailored network analysis and visualization according to specific requirements.
-Installation
+
 To get started with the project, follow these steps:
 
 Clone the repository:
