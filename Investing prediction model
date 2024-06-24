@@ -1,0 +1,71 @@
+# Import necessary libraries
+import pandas as pd
+from sklearn.model_selection import train_test_split
+from xgboost import XGBClassifier
+from sklearn.metrics import classification_report, roc_auc_score
+from imblearn.over_sampling import SMOTE
+
+# Load your dataset
+data = pd.read_csv('') #Enter path of the dataset here
+
+# Convert consumer_id column into string values
+data['consumer_id'] = data['consumer_id'].astype(str)
+
+
+# Clean the target variable
+data = data.dropna(subset=['is_investor'])  
+data['is_investor'] = data['is_investor'].astype(int)  
+
+# Handle missing values in other features if any
+data = data.fillna(data.mean())
+
+# Separate features and target
+features = ['balance_piggy', 'balance_wallet', 'endividado']
+X = data[features]
+y = data['is_investor']
+
+# Rank balance_piggy and balance_wallet from highest to lowest
+X['rank_balance_piggy'] = X['balance_piggy'].rank(ascending=False)
+X['rank_balance_wallet'] = X['balance_wallet'].rank(ascending=False)
+
+# Drop original balance columns after ranking
+X = X.drop(['balance_piggy', 'balance_wallet'], axis=1)
+
+# Handle class imbalance 
+smote = SMOTE(random_state=42)
+X_res, y_res = smote.fit_resample(X, y)
+
+# Split the data into training and testing sets
+X_train, X_test, y_train, y_test = train_test_split(X_res, y_res, test_size=0.2, random_state=42)
+
+# Train an XGBoost Classifier with class weighting
+model = XGBClassifier(n_estimators=3000, learning_rate=0.01, max_depth=3, random_state=42) #Alter n_estimators parameter to your satisfaction
+model.fit(X_train, y_train)
+
+# Make predictions on the test set
+y_pred = model.predict(X_test)
+y_pred_proba = model.predict_proba(X_test)[:, 1]
+
+# Evaluate the model
+print(classification_report(y_test, y_pred))
+print('ROC AUC Score:', roc_auc_score(y_test, y_pred_proba))
+
+# Calculate probabilities for all consumers
+all_proba = model.predict_proba(X)[:, 1]
+data['invest_proba'] = all_proba
+
+# Rank consumers by their likelihood to invest
+data = data.sort_values(by='invest_proba', ascending=False)
+
+# Display the top 10 most likely investors
+top_investors = data[['consumer_id', 'invest_proba']].head(10)
+print("Top 10 most likely investors:")
+print(top_investors)
+
+# Ensure the DataFrame is sorted by 'invest_proba' in descending order before saving
+data = data.sort_values(by='invest_proba', ascending=False)
+
+# Save the ranked consumers to a new CSV file
+data.to_csv('ranked_investors.csv', index=False)
+
+print("Ranking completed and saved to 'ranked_investors.csv'")
