@@ -1,14 +1,5 @@
 Network Analysis and Visualization with NetworkX
-Table of Contents
-Introduction
-Features
-Installation
-Usage
-Examples
-Contributing
-License
-Contact
-Introduction
+
 A NetworkX specialist with algorithmic expertise, I bring precision and creativity to network analysis and visualization tasks. As a seasoned professional, I excel in transforming complex data into clear, insightful visualizations, ensuring clients gain valuable insights.
 
 This repository contains scripts and tools for data science and network visualization and analysis using Python's NetworkX. I specialize in fulfilling networking/graph requirements, performing required analysis on graphs, and representing them using Matplotlib.
